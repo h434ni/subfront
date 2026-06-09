@@ -69,15 +69,10 @@ function changeSubscriptionDomains(
       }
 
       for (const [sourceHost, targetHost] of Object.entries(replacement)) {
-        // Replace the source host with the target host in URLs
+        // Replace the source host with the target host in subscription URIs
         modifiedLine = modifiedLine.replace(
           new RegExp(`@${sourceHost}([:/?#]|$)`, "g"),
           `@${targetHost}$1`
-        );
-        // Also replace in query parameters like host=sourceHost
-        modifiedLine = modifiedLine.replace(
-          new RegExp(`([?&]host=)${sourceHost}([&]|$)`, "g"),
-          `$1${targetHost}$2`
         );
       }
       return modifiedLine;
