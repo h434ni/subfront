@@ -1,0 +1,11 @@
+{
+  "baseUrls": {
+    "sub1/": "https://sub.original.com:1234/sub/",
+    "sub2/": "https://sub.original2.com:1235/sub/"
+  },
+  "mapping": {
+    "org-host1.com": "new-host.com",
+    "org-host2.com": "new-host2.com",
+    "org-host3.com": "new-host.com"
+  }
+}
