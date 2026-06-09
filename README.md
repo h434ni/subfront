@@ -64,7 +64,7 @@ bun run start
 ### Test
 
 ```bash
-curl https://new-server.com/abcde123
+curl https://new-server.com/sub1/abcde123
 ```
 
 All domains listed in `config.json` will be automatically replaced in the subscription content.
