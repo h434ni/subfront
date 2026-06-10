@@ -38,11 +38,11 @@ describe("parseSubscriptionHtml", () => {
 });
 
 describe("appendConfigsToEncodedSubscription", () => {
-  test("appends extra configs to an encoded subscription", () => {
+  test("prepends extra configs to an encoded subscription", () => {
     const encoded = Buffer.from("vless://one\n\nvless://two", "utf-8").toString("base64");
     const result = appendConfigsToEncodedSubscription(encoded, ["vless://three"]);
     const decoded = Buffer.from(result, "base64").toString("utf-8");
 
-    expect(decoded).toBe("vless://one\nvless://two\nvless://three");
+    expect(decoded).toBe("vless://three\nvless://one\nvless://two");
   });
 });

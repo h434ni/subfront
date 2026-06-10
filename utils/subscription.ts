@@ -116,7 +116,7 @@ export function buildCustomSubscriptionConfigs(
   }
 
   if (settings.appendUsage) {
-    const usageLabel = `📊${stats.used} / ${stats.total}📊 باقی‌مانده`;
+    const usageLabel = `📊${stats.used} / ${stats.total}📊 باقیمانده`;
     lines.push(createConfig(usageLabel));
   }
 
@@ -129,6 +129,6 @@ export function appendConfigsToEncodedSubscription(
 ): string {
   const decoded = Buffer.from(encodedContent, "base64").toString("utf-8");
   const lines = decoded.split(/\r?\n/).filter((line) => line.trim().length > 0);
-  const result = [...lines, ...extraLines].join("\n");
+  const result = [...extraLines, ...lines].join("\n");
   return Buffer.from(result, "utf-8").toString("base64");
 }
