@@ -1,4 +1,10 @@
 import { changeSubscriptionDomains } from "./index.ts";
+import {
+  getSubscriptionStats,
+  buildCustomSubscriptionConfigs,
+  appendConfigsToEncodedSubscription,
+  normalizeProxyUrl,
+} from "./utils/subscription.ts";
 
 function parseDotEnv(content: string): Record<string, string> {
   const env: Record<string, string> = {};
@@ -56,6 +62,12 @@ type SubChangerConfig = {
   baseUrl?: string;
   baseUrls?: Record<string, string>;
   mapping: Record<string, string>;
+  settings?: {
+    appendExpiration?: boolean;
+    appendUsage?: boolean;
+    proxy?: string;
+    useProxyForBaseUrl?: boolean;
+  };
 };
 
 function normalizePrefix(prefix: string): string {
@@ -116,11 +128,16 @@ const configuredPrefixesDisplay = baseUrlEntries
   .join(", ");
 
 const domainMapping = config.mapping;
+const configuredProxy = normalizeProxyUrl(config.settings?.proxy);
+const useProxyForBaseUrl = config.settings?.useProxyForBaseUrl ?? false;
+if (!useProxyForBaseUrl) {
+  process.env.NO_PROXY = "*";
+  process.env.no_proxy = "*";
+}
 
 if (!domainMapping || Object.keys(domainMapping).length === 0) {
   throw new Error(`No domain mappings found in config file: ${CONFIG_PATH}`);
 }
-
 
 let requestCounter = 0;
 
@@ -167,7 +184,8 @@ function getTargetHost(request: Request): string | null {
 
   const normalizeHost = (hostValue: string | null): string | null => {
     if (!hostValue) return null;
-    const [host = ""] = hostValue.split(",")[0].trim().split(":");
+    const firstPart = hostValue.split(",")[0];
+    const [host = ""] = firstPart?.trim().split(":") ?? [""];
     return host.trim() || null;
   };
 
@@ -212,11 +230,15 @@ function getSubscriptionUrlForRequest(request: Request): string | null {
 
 async function fetchSubscriptionWithDiagnostics(
   url: string,
-  requestId: number
+  requestId: number,
+  options: { proxy?: string } = {}
 ): Promise<string | null> {
   const start = Date.now();
   try {
-    const response = await fetch(url);
+    const response = await fetch(
+      url,
+      options.proxy ? { proxy: options.proxy } : undefined
+    );
     const durationMs = Date.now() - start;
     const contentType = response.headers.get("content-type") ?? "unknown";
     const contentLength = response.headers.get("content-length") ?? "unknown";
@@ -240,6 +262,7 @@ async function fetchSubscriptionWithDiagnostics(
       durationMs,
       contentType,
       contentLength: text.length,
+      proxyUsed: options.proxy ? "yes" : "no",
     });
     return text;
   } catch (error) {
@@ -291,7 +314,10 @@ Bun.serve({
 
     const encodedContent = await fetchSubscriptionWithDiagnostics(
       targetSubscriptionUrl,
-      requestId
+      requestId,
+      {
+        proxy: useProxyForBaseUrl ? configuredProxy : undefined,
+      }
     );
     if (!encodedContent) {
       logError(requestId, "Failed to fetch base subscription");
@@ -308,12 +334,35 @@ Bun.serve({
       return new Response("Subscription rewrite failed", { status: 500 });
     }
 
+    let finalPayload = replaced;
+    const appendExpiration = config.settings?.appendExpiration ?? false;
+    const appendUsage = config.settings?.appendUsage ?? false;
+
+    if (appendExpiration || appendUsage) {
+      try {
+        const stats = getSubscriptionStats(targetSubscriptionUrl, {
+          proxy: configuredProxy,
+        });
+        const extraConfigs = buildCustomSubscriptionConfigs(stats, {
+          appendExpiration,
+          appendUsage,
+        });
+        if (extraConfigs.length > 0) {
+          finalPayload = appendConfigsToEncodedSubscription(replaced, extraConfigs);
+        }
+      } catch (error) {
+        logInfo(requestId, "Skipped extra config generation", {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     logInfo(requestId, "Subscription rewritten", {
       mappingsApplied: Object.keys(domainMapping).length,
-      encodedLength: replaced.length,
+      encodedLength: finalPayload.length,
     });
 
-    return new Response(replaced, {
+    return new Response(finalPayload, {
       status: 200,
       headers: {
         "Content-Type": "text/plain; charset=utf-8",

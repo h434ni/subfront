@@ -7,5 +7,11 @@
     "org-host1.com": "new-host.com",
     "org-host2.com": "new-host2.com",
     "org-host3.com": "new-host.com"
+  },
+  "settings": {
+    "appendExpiration": true,
+    "appendUsage": true,
+    "useProxyForBaseUrl": false,
+    "proxy": "127.0.0.1:10808"
   }
 }

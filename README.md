@@ -27,10 +27,9 @@ Create a `config.json` or copy and modify [`config.example.json`](./config.examp
     "org-host1.com": "new-host.com",
     "org-host2.com": "new-host2.com",
     "org-host3.com": "new-host.com"
-  }
+  },
+  ...
 }
-
-
 ```
 
 Requests are routed by prefix:
@@ -48,6 +47,26 @@ For a single base URL, `baseUrl` also works:
   ...
 }
 ```
+#### Settings
+
+default settings work out of the box but you can edit them for more control.
+
+```json
+{
+  ...
+  "settings": {
+    "appendExpiration": true,
+    "appendUsage": true,
+    "useProxyForBaseUrl": false,
+    "proxy": "127.0.0.1:10808"
+  }
+}
+```
+
+- `appendExpiration` - append an extra config line that contains expiration info
+- `appendUsage` - append an extra config line that contains usage info
+- `proxy` - HTTP proxy to use for extra subscription info requests, and for base subscription requests when `useProxyForBaseUrl` is enabled (optional)
+- `useProxyForBaseUrl` - fetch the configured base subscription URL through `proxy` when set to `true` (default: `false`)
 
 #### Environment variables
 
