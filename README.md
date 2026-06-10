@@ -65,8 +65,8 @@ default settings work out of the box but you can edit them for more control.
 
 - `appendExpiration` - append an extra config line that contains expiration info
 - `appendUsage` - append an extra config line that contains usage info
-- `proxy` - HTTP proxy to use for extra subscription info requests, and for base subscription requests when `useProxyForBaseUrl` is enabled (optional)
-- `useProxyForBaseUrl` - fetch the configured base subscription URL through `proxy` when set to `true` (default: `false`)
+- `useProxyForBaseUrl` - fetch every configured base subscription URL request through `proxy` when set to `true`; when `false`, base subscription and appended stats requests bypass proxy env vars too (default: `false`)
+- `proxy` - HTTP proxy to use when `useProxyForBaseUrl` is enabled (optional)
 
 #### Environment variables
 

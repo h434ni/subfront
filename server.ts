@@ -341,7 +341,7 @@ Bun.serve({
     if (appendExpiration || appendUsage) {
       try {
         const stats = getSubscriptionStats(targetSubscriptionUrl, {
-          proxy: configuredProxy,
+          proxy: useProxyForBaseUrl ? configuredProxy : undefined,
         });
         const extraConfigs = buildCustomSubscriptionConfigs(stats, {
           appendExpiration,
