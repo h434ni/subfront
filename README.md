@@ -77,7 +77,7 @@ default settings work out of the box but you can edit them for more control.
 ### Running the Server
 
 ```bash
-bun run start
+bun start
 ```
 
 ### Test
