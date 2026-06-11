@@ -4,6 +4,12 @@ A utility that automatically fetches a V2Ray subscription and rewrites `Address`
 
 ## Installation
 
+### Requirements
+
+- [Bun](https://bun.sh/)
+- `curl`
+- `node`
+
 ```bash
 bun install
 ```
