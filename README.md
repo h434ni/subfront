@@ -18,12 +18,9 @@ bun install
 cp config.example.json config.json
 ```
 
-Requests are routed by prefix:
-
-- `/sub1/abcdef` → `https://sub.original.com:1234/sub/abcdef`
-- `/sub2/xyz` → `https://sub.original2.com:1235/sub/xyz`
-
-If the request path does not match any configured prefix, the server returns a `404` response listing the valid prefixes.
+Requests are routed by prefix. example:
+1. `/sub1/abcdef` → `https://sub.original.com:1234/sub/abcdef`
+2. `/sub2/xyz` → `https://sub.original2.com:1235/sub/xyz`
 
 For a single base URL, `baseUrl` works too:
 
@@ -35,7 +32,7 @@ For a single base URL, `baseUrl` works too:
 ```
 #### Settings
 
-default settings work out of the box but you can modify them.
+you can modify the default values
 
 ```json
 {
@@ -49,16 +46,16 @@ default settings work out of the box but you can modify them.
 }
 ```
 
-- `appendExpiration` - append an extra config line that contains expiration info
-- `appendUsage` - append an extra config line that contains usage info
-- `useProxyForBaseUrl` - fetch every configured base subscription URL request through `proxy` when set to `true`; when `false`, base subscription and appended stats requests bypass proxy env vars too (default: `false`)
-- `proxy` - HTTP proxy to use when `useProxyForBaseUrl` is enabled (optional)
+- `appendExpiration` - an extra config that contains expiration info
+- `appendUsage` - an extra config that contains usage info
+- `useProxyForBaseUrl` - fetch base URL through `proxy`. when `false` requests directly, ignoring proxies, including env vars
+- `proxy` - HTTP proxy to be used when `useProxyForBaseUrl` is enabled
 
 #### Environment variables
 
 - `PORT` - Server port (default: 3000)
-- `CONFIG_PATH` - Path to config.json containing `baseUrl` and `mapping` (default: ./config.json)
-- `DEBUG` - Enable detailed logging (true/false or 1/0, default: false)
+- `CONFIG_PATH` - default: ./config.json
+- `DEBUG` - detailed logging
 
 ### Running the Server
 
@@ -76,9 +73,10 @@ curl https://new-server.com/sub1/abcde123
 
 1. Client requests: `https://new-server.com/sub1/abcde123`
 2. Server finds the matching prefix in `config.json` and fetches from the mapped base URL
-3. Server decodes the subscription content
-4. Server applies domain replacements from `config.json`
-5. Server re-encodes to base64 and returns the modified subscription
+3. decodes the subscription content
+4. applies domain replacements from `config.json`
+5. re-encodes to base64 and returns the modified subscription
 
-## Note
-the core ([`index.ts`](./index.ts)) can also be used as a standalone script. [cli docs](docs/cli.md)
+## Notes
+- If the requested path does not match any configured prefix, the server returns a `404` response listing the valid prefixes.
+- the core ([`index.ts`](./index.ts)) can also be used as a standalone script. [cli docs](docs/cli.md)
