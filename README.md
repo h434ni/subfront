@@ -1,6 +1,6 @@
 # SubFront
 
-fetche a V2Ray subscription and rewrite domain names, acting as a new (and modified) subscription.
+fetch a V2Ray subscription and rewrite domain names, acting as a new (and modified) subscription.
 
 ## Installation
 
@@ -81,4 +81,4 @@ curl https://new-server.com/sub1/abcde123
 5. Server re-encodes to base64 and returns the modified subscription
 
 ## Note
-the core ([`index.ts`](./index.ts)) can be also used as a standalone script. [cli docs](docs/cli.md)
+the core ([`index.ts`](./index.ts)) can also be used as a standalone script. [cli docs](docs/cli.md)
