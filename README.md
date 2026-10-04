@@ -1,41 +1,21 @@
 # SubFront
 
-A utility that automatically fetches a V2Ray subscription and rewrites `Address` domain names, acting as a new (modified) subscription.
+fetche a V2Ray subscription and rewrite domain names, acting as a new (and modified) subscription.
 
 ## Installation
 
-### Requirements
-
-- [Bun](https://bun.sh/)
-- `curl`
-- `node`
+Requirements: [bun](https://bun.sh/), `curl`, `node`
 
 ```bash
+git clone https://github.com/h434ni/subfront.git
 bun install
 ```
-
-
-## Deploy to Server
-
-a built-in cli program ([`index.ts`](./index.ts)) is used. read [cli docs](docs/cli.md) if you want to use it directly.
+## Deployment
 
 ### Configuration
 
-Create a `config.json` or copy and modify [`config.example.json`](./config.example.json)
-
-```json
-{
-  "baseUrls": {
-    "sub1/": "https://sub.original.com:1234/sub/",
-    "sub2/": "https://sub.original2.com:1235/sub/"
-  },
-  "mapping": {
-    "org-host1.com": "new-host.com",
-    "org-host2.com": "new-host2.com",
-    "org-host3.com": "new-host.com"
-  },
-  ...
-}
+```bash
+cp config.example.json config.json
 ```
 
 Requests are routed by prefix:
@@ -45,7 +25,7 @@ Requests are routed by prefix:
 
 If the request path does not match any configured prefix, the server returns a `404` response listing the valid prefixes.
 
-For a single base URL, `baseUrl` also works:
+For a single base URL, `baseUrl` works too:
 
 ```json
 {
@@ -55,7 +35,7 @@ For a single base URL, `baseUrl` also works:
 ```
 #### Settings
 
-default settings work out of the box but you can edit them for more control.
+default settings work out of the box but you can modify them.
 
 ```json
 {
@@ -92,8 +72,6 @@ bun start
 curl https://new-server.com/sub1/abcde123
 ```
 
-All domains listed in `config.json` will be automatically replaced in the subscription content.
-
 ## How it Works
 
 1. Client requests: `https://new-server.com/sub1/abcde123`
@@ -101,3 +79,6 @@ All domains listed in `config.json` will be automatically replaced in the subscr
 3. Server decodes the subscription content
 4. Server applies domain replacements from `config.json`
 5. Server re-encodes to base64 and returns the modified subscription
+
+## Note
+the core ([`index.ts`](./index.ts)) can be also used as a standalone script. [cli docs](docs/cli.md)
